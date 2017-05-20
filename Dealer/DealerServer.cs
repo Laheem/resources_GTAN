@@ -76,8 +76,7 @@ class DealerServer : Script
     [Command("/dealcards")]
     public void startDeal(Client sender)
     {
-        Dealer d;
-        if (dealers.TryGetValue(sender, out d))
+        if (dealers.TryGetValue(sender, out Dealer d))
         {
             API.triggerClientEvent(sender, "listedPlayers");
             return;
@@ -89,8 +88,7 @@ class DealerServer : Script
     [Command("becomeDealer")]
     public void becomeADealer(Client sender)
     {
-        Dealer d;
-        if (!(dealers.TryGetValue(sender, out d)))
+        if (!(dealers.TryGetValue(sender, out Dealer d)))
         {
             dealers.Add(sender, new Dealer(sender));
             return;
@@ -103,8 +101,7 @@ class DealerServer : Script
     [Command("dealermenu")]
     public void startDealerMenu(Client sender)
     {
-        Dealer dealer;
-        if (dealers.TryGetValue(sender, out dealer))
+        if (dealers.TryGetValue(sender, out Dealer dealer))
         {
             API.triggerClientEvent(sender, "dealerMenu", dealer.playerList);
         }
@@ -118,8 +115,7 @@ class DealerServer : Script
     [Command("playermenu")]
     public void startPlayerMenu(Client sender)
     {
-        Player p;
-        if (allPlayers.TryGetValue(sender, out p))
+        if (allPlayers.TryGetValue(sender, out Player p))
         {
             API.triggerClientEvent(sender, "playerMenu");
             return;
@@ -130,53 +126,41 @@ class DealerServer : Script
     // Adds a player to a Dealer's game. This does the checks to ensure they're already not in another game.
     public void joinGame(Client player, Client dealer)
     {
-        Dealer playerDealer;
-        Player p;
-        if (allPlayers.TryGetValue(player,out p))
+        if (allPlayers.TryGetValue(player, out Player p))
         {
             API.sendNotificationToPlayer(player, "Unable to join game : Already in a game.");
             API.sendNotificationToPlayer(dealer, "Player unable to join : Already in game.");
             return;
         }
-        else if (!(dealers.TryGetValue(dealer, out playerDealer)))
+        if (!(dealers.TryGetValue(dealer, out Dealer playerDealer)))
         {
             API.sendNotificationToPlayer(dealer, "Unable to send invites : You're not a dealer!");
             return;
         }
-        else
-        {
-            Player newPlayer = playerDealer.addPlayer(player);
-            allPlayers.Add(player, newPlayer);
-        }
-
+        Player newPlayer = playerDealer.addPlayer(player);
+        allPlayers.Add(player, newPlayer);
     }
 
     // Deals a card to a selected player, checks if the dealer has ran out of cards.
     public void dealCard(Client sender, Client player)
     {
-        Dealer playerDealer;
-        if (dealers.TryGetValue(sender, out playerDealer))
+        if (!dealers.TryGetValue(sender, out Dealer playerDealer)) return;
+        Card drawnCard = playerDealer.dealCard(player);
+        if (drawnCard == null)
         {
-            Card drawnCard = playerDealer.dealCard(player);
-            if (drawnCard == null)
-            {
-                API.sendNotificationToPlayer(sender, "Unable to draw cards, reshuffle.");
-
-            }
-            else
-            {
-                sendMessageInRadius(sender, 30f, "~p~[DEALER]: " + sender.name + " has dealt a card to " + player.name);
-                API.sendChatMessageToPlayer(player, "~p~[DEALER]: You have been dealt the " + drawnCard);
-            }
-
+            API.sendNotificationToPlayer(sender, "Unable to draw cards, reshuffle.");
+        }
+        else
+        {
+            sendMessageInRadius(sender, 30f, "~p~[DEALER]: " + sender.name + " has dealt a card to " + player.name);
+            API.sendChatMessageToPlayer(player, "~p~[DEALER]: You have been dealt the " + drawnCard);
         }
     }
 
     // Shuffles the dealers deck, and returns all hands back to the dealer.
     public void shuffle(Client sender)
     {
-        Dealer dealer;
-        if (dealers.TryGetValue(sender, out dealer))
+        if (dealers.TryGetValue(sender, out Dealer dealer))
         {
             dealer.reshuffle();
             API.sendNotificationToPlayer(sender, "Cards reshuffled.");
@@ -188,30 +172,25 @@ class DealerServer : Script
     // Reveals all hands in the game.
     public void revealHands(Client sender)
     {
-        Dealer dealer;
         Player currPlayer;
-        if (dealers.TryGetValue(sender, out dealer))
+        if (!dealers.TryGetValue(sender, out Dealer dealer)) return;
         {
+            foreach (Client p in dealer.playerList)
             {
-                foreach (Client p in dealer.playerList)
+                if (!dealer.players.TryGetValue(p, out currPlayer)) continue;
+                sendMessageInRadius(sender, 30f, "~p~[DEALER]: Player " + p.name + " has revealed the following cards : ");
+                List<Card> list = new List<Card>();
+                foreach (Card c in currPlayer.hand)
                 {
-                    if (dealer.players.TryGetValue(p, out currPlayer))
+                    list.Add(c);
+                    if (list.Count == FORMAT_NO)
                     {
-                        sendMessageInRadius(sender, 30f, "~p~[DEALER]: Player " + p.name + " has revealed the following cards : ");
-                        List<Card> list = new List<Card>();
-                        foreach (Card c in currPlayer.hand)
-                        {
-                            list.Add(c);
-                            if (list.Count == FORMAT_NO)
-                            {
-                                sendMessageInRadius(sender, 30f, String.Join(", ", list));
-                                list = new List<Card>();
-                            }
-                        }
                         sendMessageInRadius(sender, 30f, String.Join(", ", list));
                         list = new List<Card>();
                     }
                 }
+                sendMessageInRadius(sender, 30f, String.Join(", ", list));
+                list = new List<Card>();
             }
         }
     }
@@ -221,48 +200,34 @@ class DealerServer : Script
     public void peekAtCards(Client sender)
     {
         Player peekingPlayer;
-        if (allPlayers.TryGetValue(sender, out peekingPlayer))
+        if (!allPlayers.TryGetValue(sender, out peekingPlayer)) return;
+        sendMessageInRadius(sender, 30f, " ~p~ [DEALER]: " + sender.name + " has peeked at his cards... ");
+        API.sendChatMessageToPlayer(sender, "~p~[PLAYER]: You hold the following cards : ");
+
+        // Formats the cards in a more readable way, just change the Format_No dependant on how many cards you want on a line.
+        List<Card> test = new List<Card>();
+
+        foreach (Card c in peekingPlayer.hand)
         {
-            sendMessageInRadius(sender, 30f, " ~p~ [DEALER]: " + sender.name + " has peeked at his cards... ");
-            API.sendChatMessageToPlayer(sender, "~p~[PLAYER]: You hold the following cards : ");
-
-            // Formats the cards in a more readable way, just change the Format_No dependant on how many cards you want on a line.
-            List<Card> test = new List<Card>();
-
-            foreach (Card c in peekingPlayer.hand)
-            {
-                test.Add(c);
-                if (test.Count == FORMAT_NO)
-                {
-                    API.sendChatMessageToPlayer(sender, String.Join(", ", test));
-                    test = new List<Card>();
-                }
-            }
+            test.Add(c);
+            if (test.Count != FORMAT_NO) continue;
             API.sendChatMessageToPlayer(sender, String.Join(", ", test));
-
+            test = new List<Card>();
         }
+        API.sendChatMessageToPlayer(sender, String.Join(", ", test));
     }
 
     // Removes the Player from the game. This is called in the Player Menu.
     public void leaveGame(Client sender)
     {
-        Player playerToRemove;
-        Player initcheck;
-        if (allPlayers.TryGetValue(sender,out initcheck))
+        if (!allPlayers.TryGetValue(sender, out Player playerToRemove)) return;
+        foreach (Client p in playerToRemove.d.playerList)
         {
-            if (allPlayers.TryGetValue(sender, out playerToRemove))
-            {
-
-
-                foreach (Client p in playerToRemove.d.playerList)
-                {
-                    API.sendNotificationToPlayer(p, sender.name + " has left the game.");
-                }
-
-                playerToRemove.d.removePlayer(sender);
-                allPlayers.Remove(sender);
-            }
+            API.sendNotificationToPlayer(p, sender.name + " has left the game.");
         }
+
+        playerToRemove.d.removePlayer(sender);
+        allPlayers.Remove(sender);
     }
 
     // Sends an invite to a target player, opens the JS menu for a notification like menu. 
@@ -293,10 +258,8 @@ class DealerServer : Script
     [Command("addplayer", GreedyArg = true)]
     public void startAddPlayer(Client sender, Client target)
     {
-        Dealer d;
-        Player p;
 
-        if (dealers.TryGetValue(sender, out d) && !allPlayers.TryGetValue(target,out p))
+        if (dealers.TryGetValue(sender, out Dealer d) && !allPlayers.TryGetValue(target, out Player p))
         {
             sendInvite(sender, target);
             return;
@@ -308,9 +271,8 @@ class DealerServer : Script
     [Command("dealtoplayer", GreedyArg = true)]
     public void startDealToPlayer(Client sender, Client target)
     {
-        Dealer d;
 
-        if (dealers.TryGetValue(sender, out d) && (target.exists && d.playerList.Contains(target)))
+        if (dealers.TryGetValue(sender, out Dealer d) && (target.exists && d.playerList.Contains(target)))
         {
             dealCard(sender, target);
             return;
