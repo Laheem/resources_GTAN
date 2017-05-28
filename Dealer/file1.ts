@@ -2,45 +2,52 @@
 
 API.onServerEventTrigger.connect(function (eventName, args) {
 
-    if (eventName == "dealerMenu"){
-		
-        pool = API.getMenuPool(); 
+    if (eventName == "dealerMenu") {
+
+        pool = API.getMenuPool();
         let menu = API.createMenu("Dealer Choice - ", 0, 0, 6);
         API.setMenuTitle(menu, "Dealer");
         let item1 = API.createMenuItem("Deal to Player", "NOT WORKING CORRECTLY, USE COMMANDS.");
-        let item2 = API.createMenuItem("Invite Player","NOT WORKING CORRECTLY, USE COMMANDS!");
-        let item3 = API.createMenuItem("Shuffle","Bring back all the cards into the deck.");
-        let item4 = API.createMenuItem("Reveal","Reveal all players hands!");
-		
-        item1.Activated.connect(function(menu, item) {
+        let item2 = API.createMenuItem("Invite Player", "NOT WORKING CORRECTLY, USE COMMANDS!");
+        let item3 = API.createMenuItem("Shuffle", "Bring back all the cards into the deck.");
+        let item4 = API.createMenuItem("Reveal", "Reveal all players hands!");
+        let item5 = API.createMenuItem("Deal To Board", "Deal a card to the board.");
+
+        item1.Activated.connect(function (menu, item) {
             API.triggerServerEvent("dealList");
             menu.Visible = false;
         });
-		
-        item2.Activated.connect(function(menu,item){
+
+        item2.Activated.connect(function (menu, item) {
             API.triggerServerEvent("inviteList");
             menu.Visible = false;
         });
-		
-        item3.Activated.connect(function(menu,item){
+
+        item3.Activated.connect(function (menu, item) {
             API.triggerServerEvent("shuffle");
             menu.Visible = false;
         });
-        item4.Activated.connect(function(menu,item){
+        item4.Activated.connect(function (menu, item) {
             API.triggerServerEvent("revealCards");
             menu.Visible = false;
         });
-		
-		
+        item5.Activated.connect(function (menu, item) {
+            API.triggerServerEvent("dealBoard");
+            menu.Visible = false;
+        });
+
+
         menu.AddItem(item1);
         menu.AddItem(item2);
         menu.AddItem(item3);
         menu.AddItem(item4);
+        menu.AddItem(item5);
+
         pool.Add(menu);
         API.setMenuBannerRectangle(menu, 100, 0, 0, 255);
 
-		
-        menu.Visible = true;            
+
+        menu.Visible = true;
     }
     else if (eventName == "listedPlayers") {
 
@@ -53,7 +60,7 @@ API.onServerEventTrigger.connect(function (eventName, args) {
 
         for (var p in list) {
             let item = API.createMenuItem(p, " Choose a player.");
-            item.Activated.connect(function(menu1, item) {
+            item.Activated.connect(function (menu1, item) {
                 API.triggerServerEvent("dealCard", p);
             });
             menu1.AddItem(item);
@@ -63,7 +70,7 @@ API.onServerEventTrigger.connect(function (eventName, args) {
         API.setMenuBannerRectangle(menu1, 100, 0, 0, 255);
 
 
-        menu1.Visible = true;            
+        menu1.Visible = true;
     }
     else if (eventName == "possiblePlayers") {
 
@@ -83,7 +90,7 @@ API.onServerEventTrigger.connect(function (eventName, args) {
         API.setMenuBannerRectangle(menu2, 100, 0, 0, 255);
 
 
-        menu2.Visible = true;      
+        menu2.Visible = true;
     }
     else if (eventName == "invite") {
         pool = API.getMenuPool();
@@ -94,12 +101,12 @@ API.onServerEventTrigger.connect(function (eventName, args) {
 
 
         item1.Activated.connect(function (menu, item) {
-            API.triggerServerEvent("invite",true,args[0]);
+            API.triggerServerEvent("invite", true, args[0]);
             menu.Visible = false;
         });
 
         item2.Activated.connect(function (menu, item) {
-            API.triggerServerEvent("invite",false,args[0]);
+            API.triggerServerEvent("invite", false, args[0]);
             menu.Visible = false;
         });
 
@@ -116,6 +123,9 @@ API.onServerEventTrigger.connect(function (eventName, args) {
         API.setMenuTitle(menu, "Player");
         let item1 = API.createMenuItem("Peek at Cards", "Have a glance at your cards.");
         let item2 = API.createMenuItem("Leave the game", "Throw away your cards, leave the game.");
+        let item3 = API.createMenuItem("Fold", "Know when it's time to give up. Fold your hand.");
+        let item4 = API.createMenuItem("Peek at the Board", "Have a look at the board.");
+
 
 
         item1.Activated.connect(function (menu, item) {
@@ -128,9 +138,21 @@ API.onServerEventTrigger.connect(function (eventName, args) {
             menu.Visible = false;
         });
 
+        item3.Activated.connect(function (menu, item) {
+            API.triggerServerEvent("fold");
+            menu.Visible = false;
+        });
+
+        item4.Activated.connect(function (menu, item) {
+            API.triggerServerEvent("peekboard");
+            menu.Visible = false;
+        });
+
         pool.Add(menu);
         menu.AddItem(item1);
         menu.AddItem(item2);
+        menu.AddItem(item3);
+        menu.AddItem(item4);
         API.setMenuBannerRectangle(menu, 100, 0, 0, 255);
 
         menu.Visible = true
@@ -139,10 +161,8 @@ API.onServerEventTrigger.connect(function (eventName, args) {
 
 });
 
-API.onUpdate.connect(function() {
+API.onUpdate.connect(function () {
     if (pool != null) {
         pool.ProcessMenus();
     }
 });
-
-		

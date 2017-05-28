@@ -40,10 +40,9 @@ namespace CarFunctions
         [Command("spawncar")]
         public void startSpawnCar(Client sender)
         {
-            VehicleHash bike = API.vehicleNameToModel("Bati2");
+            VehicleHash bike = API.vehicleNameToModel("adder");
             Vector3 angle = new Vector3(0.0, 0.0, 0.0);
             API.createVehicle(bike, sender.position, angle, 0, 0);
-            API.sendChatMessageToAll("BIKEEEEE");
         }
 
         [Command("night")]

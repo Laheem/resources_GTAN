@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using GTANetworkServer;
@@ -11,6 +12,21 @@ using GTANetworkShared;
 
     public ClothingStore() {
         API.onResourceStart += clothingStoreStart;
+        API.onPlayerConnected += lastknownSkin;
+    }
+
+    private void lastknownSkin(Client player)
+    {
+        if (API.hasEntityData(player, "lastSkin"))
+        {
+            PedHash skin = API.getEntityData(player.handle, "lastskin");
+            API.setPlayerSkin(player, skin);
+        }
+        else
+        {
+            API.setEntityData(player, "lastSkin", PedHash.Franklin);
+            API.setPlayerSkin(player,API.getEntityData(player.handle,"lastSkin"));
+        }
     }
 
     private void clothingStoreStart()
@@ -29,6 +45,7 @@ using GTANetworkShared;
             return; 
         }
         API.setPlayerSkin(sender, newSkin);
-        API.setPlayerDefaultClothes(sender);
+        API.setEntityData(sender, "lastSkin", newSkin);
+
     }
 }

@@ -24,7 +24,7 @@ using Cards;
 
         public void removeCards()
         {
-            this.hand = new List<Card>();
+            hand = new List<Card>();
         }
     }
 

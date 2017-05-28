@@ -18,8 +18,9 @@ public class Dealer
     public Client dealerClient { get; private set; }
     public List<Card> deckOfCards { get; private set; }
     public List<Card> drawnCards { get; private set; }
+    public List<Card> board { get; set; }
     public List<Client> playerList { get; private set; }
-    public Dictionary<Client,Player> players { get; private set; } 
+    public Dictionary<Client, Player> players { get; private set; }
 
     public Dealer(Client dealer)
     {
@@ -28,12 +29,13 @@ public class Dealer
         this.drawnCards = new List<Card>();
         this.players = new Dictionary<Client, Player>();
         this.playerList = new List<Client>();
+        this.board = new List<Card>();
     }
 
     public Player addPlayer(Client target)
     {
-      
-        Player newPlayer = new Player(this,target);
+
+        Player newPlayer = new Player(this, target);
         players.Add(target, newPlayer);
         playerList.Add(target);
 
@@ -44,6 +46,23 @@ public class Dealer
     {
         players.Remove(target);
         playerList.Remove(target);
+    }
+
+    public Card dealToBoard()
+    {
+        Random listChoice = new Random();
+        if (drawnCards.Count == MAX_CARDS)
+        {
+            return null;
+        }
+            int cardNo = listChoice.Next(0, deckOfCards.Count - 1);
+            drawnCards.Add(deckOfCards[cardNo]);
+            Card chosenCard = deckOfCards.ElementAt(cardNo);
+            deckOfCards.RemoveAt(cardNo);
+            board.Add(chosenCard);
+
+            return chosenCard;
+        
     }
 
     public Card dealCard(Client target)
