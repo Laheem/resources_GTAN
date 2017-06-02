@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ApiAiSDK;
 using GTANetworkServer;
@@ -14,7 +15,7 @@ namespace Sierra
     public class Sierra : Script
     {
         // Access token needed by API.AI to access Sierra. This is liable to change if I refresh!
-        private const string ACCESS_TOKEN = "c4019fc02df84319ac70094cfdbc608f";
+        private const string ACCESS_TOKEN = "c34397f66dc340c68b54fed1393ae6e0";
 
         private ApiAi apiAi;
 
@@ -120,6 +121,29 @@ namespace Sierra
                         break;
                     case "get-time":
                         getSierraTime(sender, sierraMessage);
+                        break;
+                    case "find-close":
+                        object newval;
+                        String poi;
+                        response.Result.Parameters.TryGetValue("places_of_interest", out newval);
+                        poi = newval.ToString();
+                        if (poi.ToLower().Equals("atm"))
+                        {
+                            Vector3 dist = findNearestAtm(sender, Atm.getListOfAllAtms());
+                            if (dist == new Vector3())
+                            {
+                                API.sendNotificationToPlayer(sender,
+                                    "Sorry, " + getSierraName(sender, false) +
+                                    " couldn't find your nearest ATM. Try later.");
+                                return;
+                            }
+                            else
+                            {
+                                API.sendChatMessageToPlayer(sender,
+                                    "~b~[" + getSierraName(sender, true) + "]: " + sierraMessage);
+                                API.triggerClientEvent(sender, "markAtm", dist);
+                            }
+                        }
                         break;
                     default:
                         API.sendChatMessageToPlayer(sender,
@@ -258,7 +282,23 @@ namespace Sierra
                 }
             }
             return handleReturned;
+
         }
 
-    }
+        public Vector3 findNearestAtm(Client sender, List<Atm> atms,float dist = 10000f)
+        {
+            Atm closest = new Atm(new Vector3());
+            foreach (Atm a in atms)
+            {
+                var distancetoAtm = sender.position.DistanceTo(a.atmLoc);
+                if (distancetoAtm < dist)
+                {
+                    dist = distancetoAtm;
+                    closest = a;
+                }
+            }
+            return closest.atmLoc;
+        }
+
+   }
 }

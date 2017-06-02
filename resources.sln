@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dealer", "Dealer\Dealer.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sierra", "Sierra\Sierra.csproj", "{584056C5-FF59-430F-B370-AE5022DD710B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accent", "Accent\Accent.csproj", "{9C6EC048-8042-4262-A80D-7645E2E01872}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{584056C5-FF59-430F-B370-AE5022DD710B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{584056C5-FF59-430F-B370-AE5022DD710B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{584056C5-FF59-430F-B370-AE5022DD710B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C6EC048-8042-4262-A80D-7645E2E01872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C6EC048-8042-4262-A80D-7645E2E01872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C6EC048-8042-4262-A80D-7645E2E01872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C6EC048-8042-4262-A80D-7645E2E01872}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
