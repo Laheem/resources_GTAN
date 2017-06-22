@@ -1,19 +1,19 @@
 ﻿let pool = null;
 
-API.onServerEventTrigger.connect(function (eventName, args) {
+API.onServerEventTrigger.connect(function(eventName, args) {
 
     if (eventName == "accentchoice") {
 
-        let list = args[0];
+        const list = args[0];
         pool = API.getMenuPool();
-        let menu = API.createMenu("Accents - ", 0, 0, 6);
+        const menu = API.createMenu("Accents - ", 0, 0, 6);
         API.setMenuTitle(menu, "Accents List`");
         API.setMenuBannerRectangle(menu, 100, 255, 0, 0);
         for (let x = 0; x < list.Count; x++) {
-            let parsedObj = JSON.parse(list[x]);
-            let accentName = parsedObj.accentName;
-            let button = API.createMenuItem(accentName, "The " + accentName + " accent.");
-            button.Activated.connect(function (menu, item) {
+            const parsedObj = JSON.parse(list[x]);
+            const accentName = parsedObj.accentName;
+            const button = API.createMenuItem(accentName, `The ${accentName} accent.`);
+            button.Activated.connect(function(menu, item) {
                 API.triggerServerEvent("accentChange", accentName);
                 menu.Visible = false;
 
@@ -33,7 +33,7 @@ API.onServerEventTrigger.connect(function (eventName, args) {
 
 });
 
-API.onUpdate.connect(function () {
+API.onUpdate.connect(function() {
     if (pool != null) {
         pool.ProcessMenus();
     }

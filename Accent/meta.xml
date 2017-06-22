@@ -13,5 +13,5 @@
   <script src="Properties/AssemblyInfo.cs" type="server" lang="csharp" />
   <script src="types-gtanetwork/Enums.js" type="client" lang="javascript" />
   <assembly ref="System.Xml.dll"/>
-
+  <assembly ref="Newtonsoft.Json.dll"/>
 </meta>

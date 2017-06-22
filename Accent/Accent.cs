@@ -1,49 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTANetworkShared;
-using GTANetworkServer;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Accent
 {
-    [Serializable()]
     public class Accent
     {
-        public String accentName { get; set; }
-        public Dictionary<String, String> wordsToChange { get; private set; }
-
-        public Accent(String accentName)
+        public Accent(string accentName)
         {
             this.accentName = accentName;
-            this.wordsToChange = new Dictionary<string, string>();
+            wordsToChange = new Dictionary<string, string>();
         }
 
-        private Accent()
+        [JsonProperty(Order = 1)]
+        public string accentName { get; set; }
+
+        [JsonProperty(Order = 2)]
+        public Dictionary<string, string> wordsToChange { get; private set; }
+
+
+        public void saveAccent()
         {
-            
+            Directory.CreateDirectory(AccentServer.filePath);
+            File.WriteAllText(AccentServer.filePath + "\\" + accentName + ".json",
+                JsonConvert.SerializeObject(this, Formatting.Indented));
         }
 
         public override string ToString()
         {
-            TextInfo text = new CultureInfo("en-GB", false).TextInfo;
-            return "[" + text.ToTitleCase(accentName.ToLower()) + " Accent]";
+            var text = new CultureInfo("en-GB", false).TextInfo;
+            return " [" + text.ToTitleCase(accentName.ToLower()) + " Accent]: ";
         }
 
-        public String replaceWords(String message)
+        public string replaceWords(string message)
         {
-            String[] strSplit = message.Split();
+            var strSplit = message.Split();
             for (var index = 0; index < strSplit.Length; index++)
             {
-                String testword;
+                string testword;
                 if (wordsToChange.TryGetValue(strSplit[index].ToLower(), out testword))
-                {
                     strSplit[index] = testword;
-                }
             }
-            return String.Join(" ",strSplit);
+            return string.Join(" ", strSplit);
         }
     }
 }

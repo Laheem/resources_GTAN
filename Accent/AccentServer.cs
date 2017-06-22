@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using GTANetworkServer;
+using Newtonsoft.Json;
 
 namespace Accent
 {
     public class AccentServer : Script
     {
+        public static string filePath = "savedAccents";
         private readonly List<Accent> allAccents = new List<Accent>();
-        private readonly string filePath = "afilepath";
 
-        private DateTime lastCheck;
 
         public AccentServer()
         {
             API.onResourceStart += accentStarted;
-            API.onUpdate += backupAccentFile;
             API.onClientEventTrigger += accentChoice;
             API.onChatMessage += appendAccent;
             API.onPlayerConnected += defaultAccent;
@@ -31,18 +30,18 @@ namespace Accent
                 API.setEntityData(player, "helperaccent", true);
             }
         }
-        
+
         // Checks to see if a player has the helper available, or just the message with the Accent Name appended on.
         private void appendAccent(Client sender, string message, CancelEventArgs cancel)
         {
             Accent a = API.getEntityData(sender, "accent");
             if (API.getEntityData(sender, "helperaccent"))
             {
-                sendMessageInRadius(sender, 30f, sender.name + ": " + a + " " + a.replaceWords(message));
+                sendMessageInRadius(sender, 30f, sender.name + a + a.replaceWords(message));
                 cancel.Cancel = true;
                 return;
             }
-            sendMessageInRadius(sender, 30f, sender.name + ": " + a + " " + message);
+            sendMessageInRadius(sender, 30f, sender.name + a + message);
             cancel.Cancel = true;
         }
 
@@ -57,40 +56,22 @@ namespace Accent
             }
         }
 
-        // NOT CURRENTLY WORKING. SEE FORUM POST.
-        private void backupAccentFile()
-        {
-            if (DateTime.Now.Subtract(lastCheck).TotalMinutes >= 60)
-            {
-                /* lastCheck = DateTime.Now;
-                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
-                 {
-                     IFormatter formatter = new BinaryFormatter();
-                     formatter.Serialize(stream, allAccents);
-                     stream.Close();
-                     
-                 }
-                 */
-            }
-        }
 
-        // NOT CURRENTLY WORKING. SEE FORUM POST.
         private void accentStarted()
         {
-            API.consoleOutput("Accents have started! Never forget the gangster accent.");
-            if (File.Exists(filePath))
+            if (!Directory.Exists(filePath))
             {
-                /*   using (FileStream stream = new FileStream(filePath, FileMode.Open))
-                   {
-                       BinaryFormatter formatter = new BinaryFormatter();
-                       allAccents = formatter.Deserialize(stream) as List<Accent>;
-                       stream.Close();
-                   }
-   */
+                API.consoleOutput("No saved accents found. Created American and English.");
+                Directory.CreateDirectory(filePath);
+                new Accent("English").saveAccent();
+                new Accent("American").saveAccent();
             }
-
-            allAccents.Add(new Accent("English"));
-            allAccents.Add(new Accent("American"));
+            foreach (var accentFile in Directory.GetFiles(filePath, "*.json", SearchOption.TopDirectoryOnly))
+            {
+                var a = JsonConvert.DeserializeObject<Accent>(File.ReadAllText(accentFile));
+                allAccents.Add(a);
+                API.consoleOutput("Added the " + a.accentName + " accent");
+            }
         }
 
         // Adds an accent to the list. Does checks to ensure the accent doesn't exist already and is above a certain length.
@@ -99,13 +80,16 @@ namespace Accent
         {
             if (findAccent(accentToAdd) == null && accentToAdd.Length >= 3)
             {
-                var a = new Accent(accentToAdd);
+                var text = new CultureInfo("en-GB", false).TextInfo;
+                var a = new Accent(text.ToTitleCase(accentToAdd.ToLower()));
                 allAccents.Add(a);
                 API.sendNotificationToPlayer(sender, "You have added the " + a.accentName + " Accent!");
+                a.saveAccent();
 
                 return;
             }
-            API.sendNotificationToPlayer(sender, "That accent already exists!");
+            API.sendNotificationToPlayer(sender,
+                "That accent already exists or doesn't have enough letters, try again!");
         }
 
         // Calls the client side, to choose from a dynamic list of Accents based on all the ones currently available.
@@ -147,6 +131,7 @@ namespace Accent
                 a.wordsToChange.Add(wordToChange.ToLower(), newWord.ToLower());
                 API.sendNotificationToPlayer(sender,
                     "Word : " + wordToChange.ToLower() + " will now be replaced by " + newWord.ToLower());
+                a.saveAccent();
                 return;
             }
 
