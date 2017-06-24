@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title</title>
+  </head>
+<body>
+<header title="dataEntry">Enter Data</header>
+
+<form id="form" class="topBefore">
+  <textarea id="data" placeholder="Enter Data"></textarea>
+   <button onclick="passData()">Submit</button>
+    
+  <p id="demo"></p>
+
+</form>
+
+<script>
+function passData() {
+	alert("hi");
+	var test = data.value;
+	resourceCall("ReturnDataValues", data);
+
+}
+</script>
+
+</body>
+</html>
