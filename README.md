@@ -20,4 +20,4 @@
 
 _Everything else is not mine, and is part of the default GTA:N resources!_
 
-For more infomation on GTA:Network - Check out [The Wiki] here!(https://wiki.gtanet.work/index.php?title=Main_Page)
+For more infomation on GTA:Network - Check out [The Wiki](https://wiki.gtanet.work/index.php?title=Main_Page) here!
