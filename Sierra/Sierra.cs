@@ -136,13 +136,12 @@ namespace Sierra
                                     "Sorry, " + getSierraName(sender, false) +
                                     " couldn't find your nearest ATM. Try later.");
                                 return;
+
                             }
-                            else
-                            {
-                                API.sendChatMessageToPlayer(sender,
-                                    "~b~[" + getSierraName(sender, true) + "]: " + sierraMessage);
-                                API.triggerClientEvent(sender, "markAtm", dist);
-                            }
+                            API.sendChatMessageToPlayer(sender,"~b~[" + getSierraName(sender, true) + "]: " + sierraMessage);
+                            float xPos = dist.X;
+                            float yPos = dist.Y;
+                            API.triggerClientEvent(sender, "markAtm", xPos,yPos);
                         }
                         break;
                     default:

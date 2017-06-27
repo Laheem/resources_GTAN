@@ -2,11 +2,11 @@
 using System.Timers;
 using GTANetworkServer;
 
-namespace Hunger
+namespace ServerMain
 {
     public class HungerServer : Script
     {
-        // Recommended to not let EFFECTS_VALUE to divide into MIN_VALUE without remainder, or isolation is not ensured.
+        // Suggested to not let EFFECTS_VALUE to divide into MIN_VALUE without remainder, or isolation is not ensured.
         // Values being changed mid thread = bad. :(
         // These are minute values, change this to change the rate of hunger + effects.
         private const double MIN_VALUE = 5;
@@ -33,12 +33,21 @@ namespace Hunger
         {
             if (!API.hasEntitySyncedData(player, "hungerVal"))
                 API.setEntitySyncedData(player, "hungerVal", 100);
+            if (!API.hasEntitySyncedData(player, "hungerVisable"))
+                API.setEntitySyncedData(player, "hungerVisable", true);
         }
 
         private void hungerStarted()
         {
             API.consoleOutput("Hunger started successfully! Don't forget your greens.");
-            hungerTimer.Elapsed += deductHunger;
+            // Remove the following if statement if you don't care about the two timers running at the same time.
+            if (EFFECTS_VALUE % MIN_VALUE == 0)
+            {
+                API.consoleOutput("Isolation is not ensured. This resource will not run.");
+                API.stopResource("Hunger");
+            }
+
+        hungerTimer.Elapsed += deductHunger;
             hungerTimer.Enabled = true;
             effectsTimer.Elapsed += attemptEffects;
             effectsTimer.Enabled = true;
@@ -77,13 +86,13 @@ namespace Hunger
         // Commands to Show/Hide the hunger bar.
 
         [Command("hidehunger")]
-        private void startHideHunger(Client sender)
+        public void startHideHunger(Client sender)
         {
             API.setEntitySyncedData(sender, "hungerVisable", false);
         }
 
         [Command("showHunger")]
-        private void startShowHunger(Client sender)
+        public void startShowHunger(Client sender)
         {
             API.setEntitySyncedData(sender, "hungerVisable", true);
         }
@@ -107,10 +116,7 @@ namespace Hunger
                         API.sendChatMessageToPlayer(c, "~p~ You're feeling incredibly hungry. Time to eat?");
                         break;
                     case LEVEL_THREE_BOUNDARY:
-                        API.sendChatMessageToPlayer(c,
-                            "~p~ You're so hungry it's starting to hurt. You might wanna get moving.");
-                        break;
-                    default:
+                        API.sendChatMessageToPlayer(c,"~p~ You're so hungry it's starting to hurt. You might wanna get moving.");
                         break;
                 }
             }
@@ -144,16 +150,14 @@ namespace Hunger
             switch (level)
             {
                 case EffectLevel.EffectLevelOne:
-                    sendMessageInRadius(sender, 30f,
-                        "~p~ " + sender.name + "'s" + " stomach starts to rumble lightly.");
+                    sendMessageInRadius(sender, 30f,"~p~ " + sender.name + "'s" + " stomach starts to rumble lightly.");
                     break;
                 case EffectLevel.EffectLevelTwo:
                     sendMessageInRadius(sender, 30f, "~p~ " + sender.name + "'s" + " stomach starts to rumble loudly.");
                     break;
                 case EffectLevel.EffectLevelThree:
-                    sendMessageInRadius(sender, 30f,
-                        "~p~ " + sender.name + "'s" + " stomach starts to rumble violently.");
-                    API.setPlayerHealth(sender, sender.health - 10);
+                    sendMessageInRadius(sender, 30f,"~p~ " + sender.name + "'s" + " stomach starts to rumble violently.");
+                    API.setPlayerHealth(sender, sender.health - 10);    
                     break;
             }
         }
@@ -173,5 +177,6 @@ namespace Hunger
         {
             return min * 60000;
         }
+
     }
 }

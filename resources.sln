@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hunger", "Hunger\Hunger.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cefnew", "cefnew\cefnew.csproj", "{62775B8A-7B5E-4375-8B7E-EB8E9909F5A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaponSafe", "WeaponSafe\WeaponSafe.csproj", "{A8FEFC7E-0D3A-4527-8967-BA07114B5B69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,10 @@ Global
 		{62775B8A-7B5E-4375-8B7E-EB8E9909F5A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62775B8A-7B5E-4375-8B7E-EB8E9909F5A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62775B8A-7B5E-4375-8B7E-EB8E9909F5A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8FEFC7E-0D3A-4527-8967-BA07114B5B69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8FEFC7E-0D3A-4527-8967-BA07114B5B69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8FEFC7E-0D3A-4527-8967-BA07114B5B69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8FEFC7E-0D3A-4527-8967-BA07114B5B69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

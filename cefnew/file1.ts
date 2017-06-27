@@ -35,11 +35,9 @@ API.onServerEventTrigger.connect(function (eventName, args) {
     API.setCanOpenChat(false);
     cef = new CefHelper("test.html");
     cef.show();
+
 });
 
-API.onResourceStop.connect(function() {
-    cef.destroy();
-});
 
 function ReturnDataValues(data) {
     cef.destroy();

@@ -32,9 +32,6 @@ API.onServerEventTrigger.connect(function (eventName, args) {
     cef = new CefHelper("test.html");
     cef.show();
 });
-API.onResourceStop.connect(function () {
-    cef.destroy();
-});
 function ReturnDataValues(data) {
     cef.destroy();
     API.setCefDrawState(false);

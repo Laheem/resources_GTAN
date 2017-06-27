@@ -4,10 +4,11 @@ const LEVEL_ONE_BOUNDARY = 40;
 const LEVEL_TWO_BOUNDARY = 20;
 const LEVEL_THREE_BOUNDARY = 10;
 const player = API.getLocalPlayer();
+const cam = API.getActiveCamera();
 
 API.onUpdate.connect(function () {
     var visable = API.getEntitySyncedData(player, "hungerVisable");
-
+        
     if (visable) {
         const hunger = API.getEntitySyncedData(player, "hungerVal");
 
@@ -23,3 +24,5 @@ API.onUpdate.connect(function () {
 
     }
 });
+
+

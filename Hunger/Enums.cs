@@ -1,4 +1,4 @@
-﻿namespace Hunger
+﻿namespace ServerMain
 {
     public enum EffectLevel
     {
