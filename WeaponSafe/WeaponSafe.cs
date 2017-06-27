@@ -11,10 +11,7 @@ namespace WeaponSafe
     public class WeaponSafe
     {
         private const int MAX_SAFE_SIZE = 1000;
-
         private readonly WeaponWeight weights = new WeaponWeight();
-
-        [JsonProperty(Order = 7)] public Guid id;
 
         public WeaponSafe(Client owner, Vector3 loc, string password)
         {
@@ -24,6 +21,7 @@ namespace WeaponSafe
             maxSize = MAX_SAFE_SIZE;
             remWeight = MAX_SAFE_SIZE;
             id = new Guid();
+            locked = true;
         }
 
 
@@ -44,6 +42,13 @@ namespace WeaponSafe
 
         [JsonProperty(Order = 6)]
         public int remWeight { get; set; }
+
+        [JsonProperty(Order = 7)]
+        public Guid id { get; private set; }
+
+        [JsonProperty(Order = 8)]
+        public bool locked { get; set; }
+
 
         public SafeStatus addWeaponToVault(Client sender, WeaponHash wep)
         {
@@ -72,7 +77,7 @@ namespace WeaponSafe
 
         public WeaponHash takeWep(int pos)
         {
-            WeaponHash wep = wepList.ElementAt(pos);
+            var wep = wepList.ElementAt(pos);
             wepList.Remove(wepList.ElementAt(pos));
             saveSafe();
             return wep;
