@@ -1,5 +1,5 @@
 ﻿<meta>
-  <info name="Sierra" description="GTA-N Robot." author="Cratox" version="1.0" shadowcopy="false" async="false" />
+  <info name="WeaponSafe" description="Weapon Storage resoource." author="Cratox" version="1.0" shadowcopy="false" async="false" />
   <assembly ref="Newtonsoft.Json.dll" />
   <script src="Enums.cs" type="server" lang="csharp" />
   <script src="file1.js" type="client" lang="javascript" />
