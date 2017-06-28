@@ -1,6 +1,6 @@
 var pool = null;
 API.onServerEventTrigger.connect(function (eventName, args) {
-    if (eventName == "accentchoice") {
+    if (eventName === "accentchoice") {
         var list = args[0];
         pool = API.getMenuPool();
         var menu = API.createMenu("Accents - ", 0, 0, 6);

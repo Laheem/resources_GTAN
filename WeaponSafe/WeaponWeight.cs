@@ -3,6 +3,8 @@ using GTANetworkShared;
 
 namespace WeaponSafe
 {
+    // Purpose of the class is to give each weapon a "weight" in the safe. If you want to modify this, change the constant values.
+    // Add weapons that I may have missed here and in WeaponName.cs
     public class WeaponWeight
     {
         private const int REGULAR_PISTOL_WEIGHT = 50;
@@ -13,6 +15,7 @@ namespace WeaponSafe
 
         public WeaponWeight()
         {
+            weightMap = new Dictionary<WeaponHash, int>();
             weightMap.Add(WeaponHash.APPistol, REGULAR_PISTOL_WEIGHT);
             weightMap.Add(WeaponHash.Pistol, REGULAR_PISTOL_WEIGHT);
             weightMap.Add(WeaponHash.Pistol50, REGULAR_PISTOL_WEIGHT);
@@ -44,12 +47,11 @@ namespace WeaponSafe
             weightMap.Add(WeaponHash.Wrench, REGULAR_MELEE_WEIGHT);
             weightMap.Add(WeaponHash.Bottle, REGULAR_MELEE_WEIGHT);
             weightMap.Add(WeaponHash.Golfclub, REGULAR_MELEE_WEIGHT);
-            weightMap.Add(WeaponHash.Golfclub, REGULAR_MELEE_WEIGHT);
             weightMap.Add(WeaponHash.Hatchet, REGULAR_MELEE_WEIGHT);
             weightMap.Add(WeaponHash.Hammer, REGULAR_MELEE_WEIGHT);
             weightMap.Add(WeaponHash.Knife, REGULAR_MELEE_WEIGHT);
         }
 
-        public Dictionary<WeaponHash, int> weightMap { get; }
+        public Dictionary<WeaponHash, int> weightMap { get; private set; }
     }
 }

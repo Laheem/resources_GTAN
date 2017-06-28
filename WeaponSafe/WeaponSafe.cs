@@ -13,23 +13,25 @@ namespace WeaponSafe
         private const int MAX_SAFE_SIZE = 1000;
         private readonly WeaponWeight weights = new WeaponWeight();
 
-        public WeaponSafe(Client owner, Vector3 loc, string password)
+        public WeaponSafe(string ownerName, Vector3 loc, string password)
         {
             wepList = new List<WeaponHash>();
             this.loc = loc;
             this.password = password;
             maxSize = MAX_SAFE_SIZE;
             remWeight = MAX_SAFE_SIZE;
-            id = new Guid();
+            id = Guid.NewGuid();
             locked = true;
+            this.ownerName = ownerName;
         }
 
+        // Indicates all the properties that are to be serialized by JSON.
 
         [JsonProperty(Order = 1)]
         public Vector3 loc { get; set; }
 
         [JsonProperty(Order = 2)]
-        private List<WeaponHash> wepList { get; set; }
+        public List<WeaponHash> wepList { get; set; }
 
         [JsonProperty(Order = 3)]
         public int maxSize { get; set; }
@@ -38,7 +40,7 @@ namespace WeaponSafe
         public string password { get; set; }
 
         [JsonProperty(Order = 5)]
-        public Client owner { get; }
+        public string ownerName { get; set; }
 
         [JsonProperty(Order = 6)]
         public int remWeight { get; set; }
@@ -50,6 +52,7 @@ namespace WeaponSafe
         public bool locked { get; set; }
 
 
+        // Adds a weapon to the vault, checks for correct size and weapons.
         public SafeStatus addWeaponToVault(Client sender, WeaponHash wep)
         {
             int x;
@@ -75,9 +78,14 @@ namespace WeaponSafe
                 JsonConvert.SerializeObject(this, Formatting.Indented));
         }
 
-        public WeaponHash takeWep(int pos)
+        // Takes a weapon from the safe's list, and removes it and gives back the weight to the safe.
+        // Returns the weapon needed to give to the player.
+        public WeaponHash takeWepFromSafe(int pos)
         {
+            int x;
             var wep = wepList.ElementAt(pos);
+            weights.weightMap.TryGetValue(wep, out x);
+            remWeight = remWeight + x;
             wepList.Remove(wepList.ElementAt(pos));
             saveSafe();
             return wep;

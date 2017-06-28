@@ -2,7 +2,7 @@
 
 API.onServerEventTrigger.connect(function(eventName, args) {
 
-    if (eventName == "accentchoice") {
+    if (eventName === "accentchoice") {
 
         const list = args[0];
         pool = API.getMenuPool();

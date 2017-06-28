@@ -21,3 +21,4 @@ namespace ServerMain
         Cancellable = 1 << 7
     }
 
+}

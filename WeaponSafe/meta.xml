@@ -1,0 +1,20 @@
+﻿<meta>
+  <info name="Sierra" description="GTA-N Robot." author="Cratox" version="1.0" shadowcopy="false" async="false" />
+  <assembly ref="Newtonsoft.Json.dll" />
+  <script src="Enums.cs" type="server" lang="csharp" />
+  <script src="file1.js" type="client" lang="javascript" />
+  <file src="safe.html" />
+  <file src="Ubuntu-Regular.ttf" />
+  <script src="WeaponName.cs" type="server" lang="csharp" />
+  <script src="WeaponSafe.cs" type="server" lang="csharp" />
+  <file src="WeaponSafe.csproj" />
+  <script src="WeaponSafeServer.cs" type="server" lang="csharp" />
+  <script src="WeaponWeight.cs" type="server" lang="csharp" />
+  <file src="obj/Debug/CoreCompileInputs.cache" />
+  <file src="obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache" />
+  <script src="obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" type="server" lang="csharp" />
+  <script src="obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" type="server" lang="csharp" />
+  <script src="obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" type="server" lang="csharp" />
+  <script src="Properties/AssemblyInfo.cs" type="server" lang="csharp" />
+  <script src="types-gtanetwork/Enums.js" type="client" lang="javascript" />
+</meta>
