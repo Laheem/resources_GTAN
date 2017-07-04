@@ -61,6 +61,7 @@ namespace WeaponSafe
                     if (safe == null)
                     {
                         API.sendNotificationToPlayer(sender,"That safe has been recently deleted.");
+                        return;
                     }
                     var attemptStr = (string) arguments[1];
                     if (safe.password.Equals(attemptStr))
