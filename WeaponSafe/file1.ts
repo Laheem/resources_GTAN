@@ -54,7 +54,6 @@ API.onServerEventTrigger.connect(function(eventName, args) {
 
         API.setMenuBannerRectangle(menu, 100, 0, 0, 255);
         pool.Add(menu);
-        API.sendChatMessage("The menu should be visable!");
         menu.Visible = true;
     } else if (eventName === "openSafe") {
         API.setCefDrawState(true);
@@ -66,7 +65,29 @@ API.onServerEventTrigger.connect(function(eventName, args) {
         currSafe = args[0];
     }
 
+    else if (eventName === "weaponWarning") {
+        pool = API.getMenuPool();
+        const menu = API.createMenu("Safe Warning - ", 0, 0, 6);
+        API.setMenuTitle(menu, "Safe Warning");
+        API.setMenuBannerRectangle(menu, 100, 255, 0, 0);
+        var buttonAcc = API.createMenuItem("Accept", "You have weapons in this safe. Deleting this will DELETE ALL WEAPONS!");
+        var buttonNo = API.createMenuItem("Decline", "Keep the safe as is, don't lose any weapons.");
+        buttonAcc.Activated.connect(function(menu, item) {
+            API.triggerServerEvent("deleteSafe", args[0]);
+            menu.Visible = false;
+        });
+        buttonNo.Activated.connect(function (menu, item) {
+            menu.Visible = false;
+        });
 
+        menu.AddItem(buttonAcc);
+        menu.AddItem(buttonNo);
+
+        pool.Add(menu);
+        API.setMenuBannerRectangle(menu, 100, 0, 0, 255);
+        menu.Visible = true;
+
+    }
 });
 
 function Password(attemptStr) {

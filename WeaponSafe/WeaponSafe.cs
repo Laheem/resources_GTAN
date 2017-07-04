@@ -90,5 +90,10 @@ namespace WeaponSafe
             saveSafe();
             return wep;
         }
+
+        public void deleteSafe()
+        {
+            File.Delete(WeaponSafeServer.filePath + "\\" + id + ".json");
+        }
     }
 }

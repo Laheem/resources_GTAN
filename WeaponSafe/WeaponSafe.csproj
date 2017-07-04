@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="SafeObject.cs" />
     <Compile Include="WeaponName.cs" />
     <Compile Include="WeaponSafe.cs" />
     <Compile Include="WeaponSafeServer.cs" />

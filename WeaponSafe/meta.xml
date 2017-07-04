@@ -7,6 +7,7 @@
   <file src="Ubuntu-Regular.ttf" />
   <script src="WeaponName.cs" type="server" lang="csharp" />
   <script src="WeaponSafe.cs" type="server" lang="csharp" />
+  <script src="SafeObject.cs" type="server" lang="csharp" />
   <file src="WeaponSafe.csproj" />
   <script src="WeaponSafeServer.cs" type="server" lang="csharp" />
   <script src="WeaponWeight.cs" type="server" lang="csharp" />

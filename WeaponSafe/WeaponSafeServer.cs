@@ -17,13 +17,16 @@ namespace WeaponSafe
         public const string filePath = "allSafes";
 
         // Should really only edit MAX_PASS_VAL, you will need to edit the inner JS on the HTML page.
+
         public const int MIN_PASS_VAL = 0;
 
         public const int MAX_PASS_VAL = 9999;
 
         private readonly WeaponName names = new WeaponName();
 
-        private readonly List<WeaponSafe> allSafes = new List<WeaponSafe>();
+        private List<WeaponSafe> allSafes = new List<WeaponSafe>();
+
+        private List<SafeObject> allSafeObjects = new List<SafeObject>();
 
         public WeaponSafeServer()
         {
@@ -42,6 +45,11 @@ namespace WeaponSafe
                     var index = (int) arguments[1];
                     var target = JsonConvert.DeserializeObject<Guid>((string) arguments[2]);
                     var wepSafe = findEqualSafe(target);
+                    if (wepSafe == null)
+                    {
+                        API.sendNotificationToPlayer(sender,"That safe has been deleted.");
+                        return;
+                    }
                     var wep = wepSafe.takeWepFromSafe(index);
                     API.sendChatMessageToPlayer(sender, "~p~[SAFE]:" + " You take a " + wepName + " from the safe.");
                     API.givePlayerWeapon(sender, wep, 9999, true, false);
@@ -50,6 +58,10 @@ namespace WeaponSafe
                     // Similar to above, pulls the PK of the safe, then checks the password against that entity.
                     var id = JsonConvert.DeserializeObject<Guid>((string) arguments[0]);
                     var safe = findEqualSafe(id);
+                    if (safe == null)
+                    {
+                        API.sendNotificationToPlayer(sender,"That safe has been recently deleted.");
+                    }
                     var attemptStr = (string) arguments[1];
                     if (safe.password.Equals(attemptStr))
                     {
@@ -59,6 +71,13 @@ namespace WeaponSafe
                     }
                     API.sendNotificationToPlayer(sender, "Incorrect password.");
                     break;
+                case "deleteSafe":
+                    var sid = JsonConvert.DeserializeObject<Guid>((string)arguments[0]);
+                    var safeToDelete = findEqualSafe(sid);
+                    var safePropToDelete = findSafeObject(safeToDelete.loc);
+                    safeCleanUp(safeToDelete,safePropToDelete);
+                    API.sendNotificationToPlayer(sender,"Your safe was deleted.");
+                    return;
 
                 default:
                     break;
@@ -74,7 +93,8 @@ namespace WeaponSafe
             {
                 var a = JsonConvert.DeserializeObject<WeaponSafe>(File.ReadAllText(file));
                 allSafes.Add(a);
-                API.createObject(-1251197000, a.loc, new Vector3());
+                NetHandle safeProp = API.createObject(-1251197000, a.loc, new Vector3());
+                allSafeObjects.Add(new SafeObject(safeProp, a.loc));
             }
         }
 
@@ -82,12 +102,19 @@ namespace WeaponSafe
         [Command("addSafe")]
         public void startAddSafe(Client sender, string password)
         {
+            if (findNearestWeaponSafe(sender, 10) != null)
+            {
+                API.sendNotificationToPlayer(sender,"There's a safe too close to you.");
+                return;
+            }
+
             int x;
             if (int.TryParse(password, out x) && x >= MIN_PASS_VAL && x <= MAX_PASS_VAL)
             {
                 var safe = new WeaponSafe(sender.socialClubName, sender.position, password);
                 safe.saveSafe();
-                API.createObject(-1251197000, safe.loc, new Vector3());
+                NetHandle safeProp = API.createObject(-1251197000, safe.loc, new Vector3());
+                allSafeObjects.Add(new SafeObject(safeProp, safe.loc));
                 allSafes.Add(safe);
                 return;
             }
@@ -207,6 +234,34 @@ namespace WeaponSafe
         }
 
 
+        [Command("deleteSafe")]
+        public void deleteSafe(Client sender)
+        {
+            WeaponSafe s = findNearestWeaponSafe(sender);
+            if (s.ownerName.Equals(sender.socialClubName))
+            {
+                SafeObject safeProp = findSafeObject(s.loc);
+
+                if (safeProp == null)
+                {
+                    API.consoleOutput("Something went wrong with deleting safes. The Entity returned null.");
+                    return;
+                }
+                if (s.wepList.Count >= 1)
+                {
+                    API.triggerClientEvent(sender,"weaponWarning",API.toJson(s.id));
+                    return;
+                }
+             
+                safeCleanUp(s,safeProp);
+                API.sendNotificationToPlayer(sender,"Safe has been deleted.");
+                return;
+
+            }
+
+            API.sendNotificationToPlayer(sender,"You don't own that safe.");
+        }
+
         // Helper Functions.
 
         private WeaponSafe findNearestWeaponSafe(Client sender, float bound = 5)
@@ -252,6 +307,27 @@ namespace WeaponSafe
                 if (s.id == id)
                     return s;
             return null;
+        }
+
+        public SafeObject findSafeObject(Vector3 loc)
+        {
+            foreach (var s in allSafeObjects)
+            {
+                if (s.location == loc)
+                {
+                    return s;
+                }
+            }
+
+            return null;
+        }
+
+        public void safeCleanUp(WeaponSafe s, SafeObject prop)
+        {
+            API.deleteEntity(prop.safeEntity);
+            allSafeObjects.Remove(prop);
+            allSafes.Remove(s);
+            s.deleteSafe();
         }
     }
 }
